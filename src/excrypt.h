@@ -4,6 +4,14 @@ extern "C" {
 #endif
 #include <stdint.h>
 
+#ifndef _MSC_VER
+// compatibility hack
+#define _byteswap_ulong __builtin_bswap32
+#define _byteswap_uint64 __builtin_bswap64
+#define max(a,b) (((a) > (b)) ? (a) : (b))
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+#endif
+
 #define U8V(data) ((uint8_t)(data) & 0xFF)
 #define ROTL8(data, bits) (U8V((data) << (bits)) | ((data) >> (8 - (bits))))
 

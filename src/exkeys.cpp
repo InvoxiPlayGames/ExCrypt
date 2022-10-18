@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_DEPRECATE
 #include <memory>
 #include <map>
 #include <vector>
@@ -117,8 +118,8 @@ BOOL ExKeysLoadKeyVault(const uint8_t* decrypted_kv, uint32_t length)
 
 BOOL ExKeysLoadKeyVaultFromPath(const char* filepath)
 {
-	FILE* file;
-	if (fopen_s(&file, filepath, "rb") != 0)
+	FILE* file = fopen(filepath, "rb");
+	if (file == NULL)
 		return false;
 
 	fseek(file, 0, SEEK_END);
@@ -246,7 +247,7 @@ uint32_t ExKeysGetConsoleID(uint8_t* raw_bytes, char* hex_string)
 		uint64_t counter = 0;
 		for (int i = 0; i < 5; i++)
 			counter = console_cert[2 + i] + counter * 0x100;
-		sprintf_s(string, 0x10, "%011llu%llx", counter >> 4, counter & 0xF);
+		snprintf(string, 0x10, "%011llu%llx", counter >> 4, counter & 0xF);
 		memcpy(hex_string, string, 0xC);
 	}
 	return 0;

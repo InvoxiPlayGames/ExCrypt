@@ -1,6 +1,8 @@
 #include <string.h>
+#ifdef _MSVC_VER
 #include <wmmintrin.h>  //for intrinsics for AES-NI
 #include <intrin.h> // cpuid
+#endif
 
 #include "excrypt.h"
 
@@ -13,6 +15,8 @@ typedef void(*rijndaelCrypt_fn)(const unsigned long*, int, const unsigned char*,
 rijndaelCrypt_fn AesEnc = rijndaelEncrypt;
 rijndaelCrypt_fn AesDec = rijndaelDecrypt;
 
+// we don't have these intrinsics on non-msvc
+#ifdef _MSVC_VER
 /* AESNI code based on https://gist.github.com/acapola/d5b940da024080dfaf5f */
 void rijndaelEncrypt_AESNI(const unsigned long* rk, int nrounds, const unsigned char* plaintext, unsigned char* ciphertext)
 {
@@ -82,8 +86,11 @@ int aesni_get_supported()
   return aesni_supported;
 }
 
+#endif
+
 void ExCryptAesKey(EXCRYPT_AES_STATE* state, const uint8_t* key)
 {
+#ifdef _MSVC_VER
   if (aesni_supported || aesni_get_supported())
   {
     __m128i* enc_table = (__m128i*)state->keytabenc;
@@ -115,6 +122,7 @@ void ExCryptAesKey(EXCRYPT_AES_STATE* state, const uint8_t* key)
     dec_table[10] = _mm_loadu_si128((const __m128i*)key);
   }
   else
+#endif
   {
     rijndaelSetupEncrypt((unsigned long*)state->keytabenc, key, 128);
     memcpy(state->keytabdec, state->keytabenc, sizeof(state->keytabdec));

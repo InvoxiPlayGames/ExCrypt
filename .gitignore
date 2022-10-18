@@ -350,3 +350,12 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# macOS metadata
+.DS_Store
+
+# emoose/ExCrypt - output files
+*.dylib
+*.dSYM
+*.so
+*.dll
